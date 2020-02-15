@@ -44,7 +44,7 @@ short int fanout(float temp, float humid)
   windspeed      = (temp+0.33*vapor_pressure-4-AT)/0.7;
   if (windspeed <= V_COE*5 && windspeed != 0) // 
     output = (windspeed/V_COE)*FAN_MAX/5 + 0.5; // +0.5 to round off typecast
-  else if (windspeed > 0)
+  else if (windspeed > 0) // output is initiated as 0 so if all conditions are not met it will return as 0
     output = FAN_MAX;
   return output > FAN_THOLD ? (short int)output : 0;
 }
@@ -52,9 +52,9 @@ short int fanout(float temp, float humid)
 #elif FANMODE == HEAT_INDEX // HEAT INDEX AUTOADJUSTMENT
 #include "DHT.h"
 
-static double output = 0;
 short int fanout(float temp, float humid)
 {
+  static float output = 0;
   static unsigned long int last_check = 0;
   extern unsigned long int current_time;
   

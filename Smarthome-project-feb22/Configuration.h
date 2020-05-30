@@ -8,14 +8,15 @@
 #define DHT_PIN A2
 
 //OUTPUT
-#define FAN_PIN A3
-#define LED_PIN A4
+#define FAN_P_PIN 3
+#define FAN_C_PIN 2
+#define LED_PIN 5
 
 /**********
  * BOARD SETTINGs AND CONSTANTS 
  **********/
 #define DATARATE 9600 //data rate in bits per second
-#define INFO_BREAKTIME 1000 // delay before another piece of information is sent
+#define INFO_BREAKTIME 500 // delay before another piece of information is sent
 #define BREAKTIME 0 // delay between cycles, forcibly decrease reactiveness
 
 //uncomment the following line to use fahrenheit for output log (this file still use Celsius as parameters)

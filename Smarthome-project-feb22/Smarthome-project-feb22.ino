@@ -10,7 +10,7 @@
 unsigned long int current_time;
 char stream[128];
 
-DHT dht(DHT_PIN,DHT_TYPE);
+DHT dht(DHT_PIN, DHT_TYPE);
 
 void setup() 
 {
@@ -19,7 +19,8 @@ void setup()
   pinMode(PHOTOSENSOR_PIN, INPUT);
   //OUTPUT SETUP
   pinMode(LED_PIN, OUTPUT);
-  pinMode(FAN_PIN, OUTPUT);
+  pinMode(FAN_P_PIN, OUTPUT);
+  pinMode(FAN_C_PIN, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
   //INITIALIZING THE BOARD
   Serial.begin(DATARATE);
@@ -98,7 +99,8 @@ void loop()
 
   // Adjustment to light and fan
   short int fan_out = fanout(temp, humid);
-  analogWrite(FAN_PIN, fan_out);
+  analogWrite(FAN_P_PIN, fan_out);
+  digitalWrite(FAN_C_PIN, LOW);
   short int led_out = luminosity(photo_v, adjustor_v);
   analogWrite(LED_PIN, led_out);
 
@@ -106,11 +108,11 @@ void loop()
   if (current_time - lastcheck >= INFO_BREAKTIME)
   {
     sprintf(stream, "---====Electronic Outputs====---\n\r"
-                    "Fan Power    (FAN_MAX)Max : %d\n\r",
-                    "L.E.D. Power (LED_MAX)Max : %d\n\r",
+                    "Fan Power    (%d)Max : %d\n\r",
+                    "L.E.D. Power (%d)Max : %d\n\r",
                     "--------------------------------\n\r",
-                    fan_out,
-                    led_out);
+                    FAN_MAX,fan_out,
+                    LED_MAX,led_out);
     Serial.print(stream);
     lastcheck = current_time; // set the last check time to current time as the last piece of info have been delivered
   }

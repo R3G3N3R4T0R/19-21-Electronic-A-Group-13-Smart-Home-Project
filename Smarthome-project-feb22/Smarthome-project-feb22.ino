@@ -8,7 +8,7 @@
  * THE CODE REQUIRES ADAFRUIT DHT LIBRARY
  ********************/
 unsigned long int current_time;
-char stream[128];
+char stream[50]; //stream buffer for Serial.print
 
 DHT dht(DHT_PIN, DHT_TYPE);
 
@@ -82,19 +82,19 @@ void loop()
     sprintf(heat_index_out, "%fC", heat_index);
     #endif
     
-    sprintf(stream, "--===Sensor  Values===--\n\r",
-                    "Adjustor Value    : %d\n\r",
-                    "Photosensor Value : %d\n\r",
-                    "Temperature       : %s\n\r",
-                    "Humidity          : %f%\n\r",
-                    "Heat Index        : %s\n\r",
-                    "------------------------\n\r",
-                    adjustor_v,
-                    photo_v,
-                    tempout,
-                    humid,
-                    heat_index_out);
+    // The following output did not execute properly as a whole so it is splitted up
+    Serial.print(   "--===Sensor  Values===--\n\r");
+    sprintf(stream, "Adjustor Value    : %d\n\r", adjustro_v);
     Serial.print(stream);
+    sprintf(stream, "Photosensor Value : %d\n\r", photo_v);
+    Serial.print(stream);
+    sprintf(stream, "Temperature       : %s\n\r", tempout);
+    Serial.print(stream);
+    sprintf(stream, "Humidity          : %f%\n\r", humid);
+    Serial.print(stream);
+    sprintf(stream, "Heat Index        : %s\n\r", heat_index_out);
+    Serial.print(stream);
+    Serial.print(   "------------------------\n\r");
   }
 
   // Adjustment to light and fan
@@ -107,13 +107,13 @@ void loop()
   //Electronics output
   if (current_time - lastcheck >= INFO_BREAKTIME)
   {
-    sprintf(stream, "---====Electronic Outputs====---\n\r"
-                    "Fan Power    (%d)Max : %d\n\r",
-                    "L.E.D. Power (%d)Max : %d\n\r",
-                    "--------------------------------\n\r",
-                    FAN_MAX,fan_out,
-                    LED_MAX,led_out);
+    // same for this one it did not output all lines
+    Serial.print(   "---====Electronic Outputs====---\n\r");
+    sprintf(stream, "Fan Power    (%d)Max : %d\n\r", FAN_MAX, fan_out);
     Serial.print(stream);
+    sprintf(stream, "L.E.D. Power (%d)Max : %d\n\r", LED_MAX, led_out);
+    Serial.print(stream);
+    Serial.print(   "--------------------------------\n\r");
     lastcheck = current_time; // set the last check time to current time as the last piece of info have been delivered
   }
 

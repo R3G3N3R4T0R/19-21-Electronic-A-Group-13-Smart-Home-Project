@@ -2,6 +2,8 @@
 
 19 - 21 Electronic Class A Group 3 Smart Home Project
 
+Written to be used with Arduino Uno
+
 Written in: Arduino C++
 
 Dependencies: 

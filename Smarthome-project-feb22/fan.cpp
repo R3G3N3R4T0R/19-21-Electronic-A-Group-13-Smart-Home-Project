@@ -13,21 +13,40 @@ short int fanout(float temp, float humid)
 }
 
 #elif FANMODE == LINEAR // PROPORTIONAL CONTROL
+
+#ifdef HEAT_INDEX_FOR_PROPORTIONAL_CONTROL //enable DHT library if heat index is used in calculation
+  #include "DHT.h"
+#endif
+
 const float fan_power_range = END_POWER-INIT_POWER // power range for the fan to operate
 short int fanout(float temp, float humid)
 {
-  float output, tempout, humidout;
+  float output;
+  #ifdef HEAT_INDEX_FOR_PROPORTIONAL_CONTROL
+  float heat_index = dht.computeHeatIndex(temp, humid, false);
+  if (heat_index >= INIT_TEMP)
+  {
+    if (heat_index >= END_TEMP)
+      output = END_POWER;
+    else
+    {
+      output = ((temp - INIT_TEMP)/(END_TEMP - INIT_TEMP))*fan_power_range + INIT_POWER;
+    }
+  }
+  #else
+  float tempout, humidout;
   if (temp >= INIT_TEMP || humid >= INIT_HUMID)
   {
     if (temp >= END_TEMP || humid >= END_HUMID)
       output = END_POWER;
     else
     {
-      tempout  = (temp-INIT_TEMP)/(END_TEMP-INIT_TEMP)*fan_power_range+INIT_POWER;
-      humidout = (humid-INIT_HUMID)/(END_HUMID-INIT_HUMID)*fan_power_range+INIT_POWER;
+      tempout  = ((temp - INIT_TEMP)/(END_TEMP - INIT_TEMP))*fan_power_range + INIT_POWER;
+      humidout = ((humid - INIT_HUMID)/(END_HUMID - INIT_HUMID))*fan_power_range + INIT_POWER;
       output = tempout > humidout ? tempout : humidout;
     }
   }
+  #endif
   else
     output = 0;
   return output > FAN_THOLD ? (short int)output : 0;
@@ -37,8 +56,9 @@ short int fanout(float temp, float humid)
 #include <math.h>
 short int fanout(float temp, float humid)
 {
-  double output = 0; // initiate as 0
-  unsigned double vapor_pressure, windspeed;
+  float output = 0; // initiate as 0
+  unsigned float vapor_pressure;
+  float windspeed;
   
   vapor_pressure = (humid/100)*6.105*exp((17.27*temp)/(237.7+temp));
   windspeed      = (temp+0.33*vapor_pressure-4-AT)/0.7;
@@ -49,6 +69,7 @@ short int fanout(float temp, float humid)
   return output > FAN_THOLD ? (short int)output : 0;
 }
 
+/* Does not work right now since it does not include wind chill in its formula
 #elif FANMODE == HEAT_INDEX // HEAT INDEX AUTOADJUSTMENT
 #include "DHT.h"
 
@@ -77,4 +98,5 @@ short int fanout(float temp, float humid)
   }
   return (short int)output
 }
+*/
 #endif

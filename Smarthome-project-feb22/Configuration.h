@@ -40,9 +40,10 @@
 
 //Select LED Automatic operation mode
 //Bang Bang control(on-off): BANG_BANG
-//Proportional control     : LINEAR  -- not finished and unusable
+//Proportional control     : LINEAR -- follows a linear scale from the input to output for the light
 //Adaptation               : ADAPT -- instead of using outdoor light level for output, it strives for the indoor light level to be in range
 //                                 -- manual adjustment changes the light level it adapts to and ignores LED_ADJ_RANGE
+//                                 -- photosensor should be placed indoor for it to work
 #define LEDMODE_AUTO ADAPT
 
 //Select LED Manual adjustment mode - LINEAR only
@@ -111,19 +112,24 @@
 #define END_HUMID 100.0
 #define END_POWER 255 // the highest power the fan should be running at
 
+//  Uncomment the following line if you want to use heat index for power scale in proportional control
+//#define HEAT_INDEX_FOR_PROPORIONAL_CONTROL
+
 // APPARENT TEMPERATURE FUNCTION
 //  If Apparent temperature control is selected input the coefficiect of fan speed(V_COE) to be multiplied with the output voltage
 //  AT is the apparent temperature you wan to attain in Celsius
 #define V_COE 1.0
 #define AT 25.0
 
-// Heat Index Autoadjustment
+/*
+// Heat Index Autoadjustment (DOES NOT WORK CURRENTLY)
 //  Heat Index is calculated using dht library function, you only need to set target temperature
 #define TARGET_TEMP 25.0
 //  Aggresiveness can be adjusted similar to PID control but you can only choose increment of power between each degree
 //  and time interval before running another Heat Index check in millisecond
 #define FAN_INC 10 // amount of power increase per degree (float or int)
 #define FAN_INT 500 // integer in ms
+*/
 
 /**********
  * FUNCTION DECLARATION

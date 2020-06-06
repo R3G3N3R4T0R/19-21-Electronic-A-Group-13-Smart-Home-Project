@@ -39,7 +39,7 @@
 #define LED_THOLD 25 // set the lower led threshold if the output is lower than LED_THOLD it will output 0 instead, defaulted to 25
 
 //Select LED Automatic operation mode
-//Bang Bang control(on-off): BANG_BANG
+//Bang Bang control(on-off): BANG_BANG -- applicable when photosensor is digital
 //Proportional control     : LINEAR -- follows a linear scale from the input to output for the light
 //Adaptation               : ADAPT -- instead of using outdoor light level for output, it strives for the indoor light level to be in range
 //                                 -- manual adjustment changes the light level it adapts to and ignores LED_ADJ_RANGE
@@ -48,7 +48,7 @@
 #define LINEAR 1
 #define ADAPT 2
 
-#define LEDMODE_AUTO ADAPT
+#define LEDMODE_AUTO BANG_BANG
 
 //Select LED Manual adjustment mode - LINEAR only
 // Upper Cap  : CAP_U -- the adjustor set the upper cap for the LED to operate at max power

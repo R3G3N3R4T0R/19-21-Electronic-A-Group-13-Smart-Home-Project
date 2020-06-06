@@ -75,26 +75,31 @@ void loop()
   {
     char tempout[32], heat_index_out[32]; //Temperature output placeholder for when fahrenheit reading is enabled
     #ifdef FAHRENHEIT
-    sprintf(temp, "%fF", temp*(9/5)+32);
-    sprintf(heat_index, "%fF", heat_index*(9/5)+32);
+    float tempout = temp*(9/5)+32;
+    float heat_index = heat_index*(9/5)+32;
+    #define T_UNIT *F
     #else
-    sprintf(tempout, "%fC", temp);
-    sprintf(heat_index_out, "%fC", heat_index);
+    float tempout = temp;
+    float heat_index_out = heat_index;
+    #define T_UNIT *C
     #endif
     
     // The following output did not execute properly as a whole so it is splitted up
-    Serial.print(   "--===Sensor  Values===--\n\r");
+    Serial.println( "--===Sensor  Values===--");
     sprintf(stream, "Adjustor Value    : %d\n\r", adjustor_v);
-    Serial.print(stream);
+    Serial.print(stream)
     sprintf(stream, "Photosensor Value : %d\n\r", photo_v);
     Serial.print(stream);
-    sprintf(stream, "Temperature       : %s\n\r", tempout);
-    Serial.print(stream);
-    sprintf(stream, "Humidity          : %f%%\n\r", humid);
-    Serial.print(stream);
-    sprintf(stream, "Heat Index        : %s\n\r", heat_index_out);
-    Serial.print(stream);
-    Serial.print(   "------------------------\n\r");
+    Serial.print(   "Temperature       : ");
+    Serial.print(tempout);
+    Serial.println(T_UNIT);
+    Serial.print(   "Humidity          : ");
+    Serial.print(humid);
+    Serial.println("%");
+    Serial.print(   "Heat Index        : ");
+    Serial.print(heat_index);
+    Serial.println(T_UNIT)
+    Serial.println( "------------------------");
   }
 
   // Adjustment to light and fan

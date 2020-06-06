@@ -84,13 +84,13 @@ void loop()
     
     // The following output did not execute properly as a whole so it is splitted up
     Serial.print(   "--===Sensor  Values===--\n\r");
-    sprintf(stream, "Adjustor Value    : %d\n\r", adjustro_v);
+    sprintf(stream, "Adjustor Value    : %d\n\r", adjustor_v);
     Serial.print(stream);
     sprintf(stream, "Photosensor Value : %d\n\r", photo_v);
     Serial.print(stream);
     sprintf(stream, "Temperature       : %s\n\r", tempout);
     Serial.print(stream);
-    sprintf(stream, "Humidity          : %f%\n\r", humid);
+    sprintf(stream, "Humidity          : %f%%\n\r", humid);
     Serial.print(stream);
     sprintf(stream, "Heat Index        : %s\n\r", heat_index_out);
     Serial.print(stream);

@@ -16,7 +16,7 @@
  * BOARD SETTINGs AND CONSTANTS 
  **********/
 #define DATARATE 9600 //data rate in bits per second
-#define INFO_BREAKTIME 500 // delay before another piece of information is sent
+#define INFO_BREAKTIME 1500 // delay before another piece of information is sent
 #define BREAKTIME 0 // delay between cycles, forcibly decrease reactiveness
 
 //uncomment the following line to use fahrenheit for output log (this file still use Celsius as parameters)
@@ -44,6 +44,10 @@
 //Adaptation               : ADAPT -- instead of using outdoor light level for output, it strives for the indoor light level to be in range
 //                                 -- manual adjustment changes the light level it adapts to and ignores LED_ADJ_RANGE
 //                                 -- photosensor should be placed indoor for it to work
+#define BANG_BANG 0
+#define LINEAR 1
+#define ADAPT 2
+
 #define LEDMODE_AUTO ADAPT
 
 //Select LED Manual adjustment mode - LINEAR only
@@ -55,6 +59,11 @@
 //                    -- the adjustor extreme behavior is the same as lower cap
 // Sensitivity: SENSITIVITY -- the adjustor moves the upper cap lower and the lower cap higher the larger the value it is, incresing ratio
 //                          -- adjustor extreme behavior same as lower cap
+#define CAP_U 0
+#define CAP_L 1
+#define CAP_W 2
+#define SENSITIVITY 3
+
 #define LEDMODE_MANU CAP_W
 
 //ADVANCED CONTROL OF LED MODE

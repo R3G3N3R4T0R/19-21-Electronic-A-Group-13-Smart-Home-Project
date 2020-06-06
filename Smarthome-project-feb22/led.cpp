@@ -84,17 +84,17 @@
     if (adj == -1)
       adj = DEFAULT_LUMINATION; // set the adjustor to default luumination value if not enabled
     
-    float diff = adj - photo;
+    float diff = photo - adj;
     if (diff == 0 || (diff < 0 && output == 0)); // directly returns output when no change is needed
     else
     {
       output += diff*LED_INC;
-      if (LED_THOLD <= output <= LED_MAX); //check if output is in range
+      if (LED_THOLD <= output && output<= LED_MAX); //check if output is in range
       else if (output <= LED_THOLD)
         output = 0;
       else if (output <= LED_MAX)
         output = LED_MAX;
     }
-    return (short int)output
+    return (short int)output;
   }
 #endif

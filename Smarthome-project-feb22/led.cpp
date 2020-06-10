@@ -65,6 +65,8 @@
         control_v = pow(control_v, LUMINANCE_EXPONENT);
         output = control_v*(END_LUMINANCE - INIT_LUMINANCE) + INIT_LUMINANCE;
       }
+    } else {
+      output = -1;
     }
     return (short int)output;
   }
@@ -84,7 +86,7 @@
     if (adj == -1)
       adj = DEFAULT_LUMINATION; // set the adjustor to default luumination value if not enabled
     
-    float diff = photo - adj;
+    float diff = adj - photo;
     if (diff == 0 || (diff < 0 && output == 0)); // directly returns output when no change is needed
     else
     {

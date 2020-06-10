@@ -62,7 +62,7 @@ short int fanout(float temp, float humid)
   
   vapor_pressure = (humid/100)*6.105*exp((17.27*temp)/(237.7+temp));
   windspeed      = (temp+0.33*vapor_pressure-4-AT)/0.7;
-  if (windspeed <= V_COE*5 && windspeed != 0) // 
+  if (windspeed <= V_COE*5) // 
     output = (windspeed/V_COE)*FAN_MAX/5 + 0.5; // +0.5 to round off typecast
   else if (windspeed > 0) // output is initiated as 0 so if all conditions are not met it will return as 0
     output = FAN_MAX;

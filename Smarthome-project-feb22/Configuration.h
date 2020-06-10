@@ -3,14 +3,24 @@
  * INPUT and OUTPUT PINS
  **********/
 //INPUT
-#define ADJUSTOR_PIN A0// must be set but not connected to any device
-#define PHOTOSENSOR_PIN A1
-#define DHT_PIN A2
+#define ADJUStOR_FAN_PIN A0// must be set but not connected to any device
+#define ADJUSTOR_LED_PIN A1// also must be set
+#define PHOTOSENSOR_PIN A2
+#define DHT_PIN A3
+
+//JUMPERS jump the pins to disable correseponding adjustors
+#define ADJUSTOR_FAN_JUMPER 6
+#define ADJUSTOR_LED_JUMPER 7
 
 //OUTPUT
 #define FAN_P_PIN 3
 #define FAN_C_PIN 2
 #define LED_PIN 5
+
+//Extra Voltage pins uncomment to enable
+#define EXTRA_VOLTAGE_PINS
+#define EXTRA_PIN_COUNT 4 // amount of extra power pins
+#define EXTRA_PINS 8,9,10,11// pins that are selected as power pins
 
 /**********
  * BOARD SETTINGs AND CONSTANTS 
@@ -31,10 +41,14 @@
 #define DHT_TYPE DHT11
 
 /*****
- * LED Settings
+ * Adjustor Settings
  */
 #define ADJUSTOR_MAX 1023 // integer of the max adjustor input excess will only be treated as this value, defaulted to 1023
 #define ADJUSTOR_MIN 0 // integer of the min adjustor input, upon reaching any lower number will treat it as 0 , defaulted to 0
+
+/*****
+ * LED Settings
+ */
 #define LED_MAX 255 // integer for the max power output, defaulted to 255
 #define LED_THOLD 25 // set the lower led threshold if the output is lower than LED_THOLD it will output 0 instead, defaulted to 25
 
@@ -93,14 +107,31 @@
  *Fan Settings
  */
 #define FAN_MAX 255 // integer for the max power output, defaulted to 255
-#define FAN_THOLD 25 //set the low fan threshold if output is lower than FAN_THOLD it will output 0 instead
+#define FAN_THOLD 25 //set the low fan threshold if output is lower than FAN_THOLD it will output 0 instead, default 25
 
 //Select Fan operation mode
 // Bang Bang control(on-off): BANG_BANG
 // Proportional control     : LINEAR
 // Apparent temp formula    : APPARENT_TEMPERATURE
 // Heat Index Autoadjustment: HEAT_INDEX
+#define BANG_BANG 0
+#define LINEAR 1
+#define APPARENT_TEMPERATURE 2
+//#define HEAT_INDEX 3
+
 #define FANMODE APPARENT_TEMPERATURE
+
+//MANUAL CONTROLS
+// Temperature offsets for anjustor to change, the upper cap is the max value added to the target and the lower
+// offset is the max value subtracted, the rate of change is always linear
+#define FAN_UPPER_TEMP_OFFSET 4
+#define FAN_LOWER_TEMP_OFFSET 4
+#define FAN_UPPER_HUMID_OFFSET 20
+#define FAN_LOWER_HUMID_OFFSET 20
+#define FAN_DEFAULT_V 512 //Default value when adjustor is detached
+// OFF/FULL at MIN/MAX adjustor value, uncomment the following line to turn off fan when adjustor value is at or lower than minimum value
+// or full power when at or higher than maximum value
+#define FAN_EXTREME
 
 //ADVANCED CONTROL OF FAN MODE
 //*All temperature and humidity parameters requires trailing 0s (.0)
@@ -120,12 +151,14 @@
 #define END_TEMP 33.0
 #define END_HUMID 100.0
 #define END_POWER 255 // the highest power the fan should be running at
+#define FAN_POWER_CONTROL_UPPER 1.5 //Upper multiplier range for the fan power, default 1.5
+#define FAN_POWER_CONTROL_LOWER 0 //Lower multiplier range for the fan power, default 0
 
-//  Uncomment the following line if you want to use heat index for power scale in proportional control
+//  Uncomment the following line if you want to use heat index for power scale in proportional control (only use temperature parameters)
 //#define HEAT_INDEX_FOR_PROPORIONAL_CONTROL
 
 // APPARENT TEMPERATURE FUNCTION
-//  If Apparent temperature control is selected input the coefficiect of fan speed(V_COE) to be multiplied with the output voltage
+//  If Apparent temperature control is selected input the coefficiect of fan speed to voltage (V_COE) to be multiplied with the output voltage
 //  AT is the apparent temperature you wan to attain in Celsius
 #define V_COE 1.0
 #define AT 25.0
@@ -143,5 +176,5 @@
 /**********
  * FUNCTION DECLARATION
  **********/
-short int fanout(float temp, float humid); // fan.cpp
+short int fanout(float temp, float humid, short int adj); // fan.cpp
 short int luminosity(short int photo, short int adj); // led.cpp

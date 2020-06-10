@@ -3,7 +3,7 @@
 #include <string.h>
 /********************
  * SMART HOME PROJECT FOR VTC
- * THE SOURCE IS PUBLISHED WITH THE UNLICENSE ON GITHUB
+ * THE SOURCE IS PUBLISHED WITH THE MIT LICENSE ON GITHUB
  * THE CODE WILL NOT BE MAINTAINED AFTER SUBMISSION
  * THE CODE REQUIRES ADAFRUIT DHT LIBRARY
  ********************/
@@ -15,8 +15,11 @@ DHT dht(DHT_PIN, DHT_TYPE);
 void setup() 
 {
   //INPUT SETUP
-  pinMode(ADJUSTOR_PIN, INPUT);
+  pinMode(ADJUSTOR_FAN_PIN, INPUT);
+  pinMode(ADJUSTOR_LED_PIN, INPUT);
   pinMode(PHOTOSENSOR_PIN, INPUT);
+  pinMode(ADJSUTOR_FAN_JUMPER, INPUT);
+  pinMode(ADJSUTOR_LED_JUMPER, INPUT);
   //OUTPUT SETUP
   pinMode(LED_PIN, OUTPUT);
   pinMode(FAN_P_PIN, OUTPUT);
@@ -33,32 +36,41 @@ void loop()
   delay(BREAKTIME); //Loop delay
   current_time = millis(); // Marking down current system time
   digitalWrite(LED_BUILTIN, HIGH); // The ON light
+  #ifdef EXTRA_VOLTAGE_PINS
+  int powerpins = (EXTRA_PINS);
+  Serial.print("Extra Power Pins : ")
+  for (int pin = EXTRA_PIN_COUNT, pin > 0, pin--)
+  {
+    digitalWrite(pin, HIGH);
+    Serial.print(pin);
+    Serial.print(",");
+  }
+  Serial.print("\n\r");
+  #endif
   
   // Recording and loggin of sensor values
-  short int adjustor_v = analogRead(ADJUSTOR_PIN); // should output NaN if not connected to anything
-  short int photo_v = analogRead(PHOTOSENSOR_PIN); //luminance check, photosensor
+  short int adjustor_fan_v = analogRead(ADJUStOR_FAN_PIN); // should output NaN if not connected to anything
+  short int adjustor_led_v = analogRead(ADJUStOR_LED_PIN); // ditto
+  short int photo_v = analogRead(PHOTOSENSOR_PIN); // luminance check, photosensor
   float temp = dht.readTemperature(); // dht check, temp & humidity
   float humid = dht.readHumidity();
   
   // Sensor Error Checking
-  static short int legacy_adjustor_v = -1;
-  if (isnan(adjustor_v)) // disable adjustor features if not enabled
+  static short int legacy_adjustor_fan_v = -1; // reference value for fan adjustor
+  static short int legacy_adjustor_led_v = -1; // reference value for led adjustor
+  if (digitalRead(ADJUSTOR_FAN_JUMPER) == HIGH) // disable adjustor features if jumped
   {
-    Serial.println("MANUAL ADJUSTMENT DISABLED");
-    adjustor_v = legacy_adjustor_v; // keep the adjustor value if the adjustor is disconnected
+    Serial.println("MANUAL FAN ADJUSTMENT DISABLED");
+    adjustor_fan_v = legacy_adjustor_fan_v; // keep the adjustor value if the fan adjustor is disconnected
   } else {
-    legacy_adjustor_v = adjustor_v; // save the input of the adjustor value for when the adjustor is disconnected afterwards
+    legacy_adjustor_fan_v = adjustor_fan_v; // save the input of the fan adjustor value for when the adjustor is disconnected afterwards
   }
-  if (isnan(photo_v)) // check if photo sensor is connected
+  if (digitalRead(ADJUSTOR_LED_JUMPER) == HIGH) // disable adjustor features if jumped
   {
-    Serial.println("PHOTO-SENSOR DISABLED");
-    photo_v = -1;
-  }
-  if (adjustor_v == -1 && photo_v == -1) //if all light control servos are disabled, terminate the loop
-  {
-    Serial.println("NO LIGHT CONTROL ENABLED LOOP TERMINATED");
-    digitalWrite(LED_BUILTIN, LOW);
-    return;
+    Serial.println("MANUAL LED ADJUSTMENT DISABLED");
+    adjustor_led_v = legacy_adjustor_led_v; // keep the adjustor value if the led adjustor is disconnected
+  } else {
+    legacy_adjustor_led_v = adjustor_led_v; // save the input of the led adjustor value for when the adjustor is disconnected afterwards
   }
   if (isnan(temp) || isnan(humid)) //end the loop if dht is not connected
   {
@@ -86,8 +98,10 @@ void loop()
     
     // The following output did not execute properly as a whole so it is splitted up
     Serial.println( "--===Sensor  Values===--");
-    sprintf(stream, "Adjustor Value    : %d\n\r", adjustor_v);
-    Serial.print(stream)
+    sprintf(stream, "Fan Adjustor Value: %d\n\r", adjustor_fan_v);
+    Serial.print(stream);
+    sprintf(stream, "LED Adjustor Value: %d\n\r", adjustor_led_v);
+    Serial.print(stream);
     sprintf(stream, "Photosensor Value : %d\n\r", photo_v);
     Serial.print(stream);
     Serial.print(   "Temperature       : ");
@@ -98,15 +112,15 @@ void loop()
     Serial.println("%");
     Serial.print(   "Heat Index        : ");
     Serial.print(heat_index);
-    Serial.println(T_UNIT)
+    Serial.println(T_UNIT);
     Serial.println( "------------------------");
   }
 
   // Adjustment to light and fan
-  short int fan_out = fanout(temp, humid);
+  short int fan_out = fanout(temp, humid, adjustor_fan_v);
   analogWrite(FAN_P_PIN, fan_out);
   digitalWrite(FAN_C_PIN, LOW);
-  short int led_out = luminosity(photo_v, adjustor_v);
+  short int led_out = luminosity(photo_v, adjustor_led_v);
   analogWrite(LED_PIN, led_out);
 
   //Electronics output

@@ -4,9 +4,25 @@
 #include "Configuration.h"
 
 #if FANMODE == BANG_BANG // BANG BANG CONTROL
-short int fanout(float temp, float humid)
+short int fanout(float temp, float humid, short int adj)
 {
-  if (temp >= TRIG_TEMP || humid >= TRIG_HUMID)
+  if (adj == -1) //Adjustor disabled use default value
+    adj = FAN_DEFAULT_V;
+  #ifdef FAN_EXTREME
+    if (adj <= ADJUSTOR_MIN)
+      return 0;
+    else if (adj >= ADJUSTOR_MAX)
+      return FAN_MAX;
+  #else
+    if (adj < ADJUSTOR_MIN)
+      adj = ADJUSTOR_MIN;
+    else if (adj > ADJUSTOR_MAX)
+      adj = ADJUSTOR_MAX;
+  #endif
+  short int adj_p = (adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN);
+  float trig_temp = TRIG_TEMP - FAN_LOWER_TEMP_OFFSET + (FAN_LOWER_TEMP_OFFSET + FAN_UPPER_TEMP_OFFSET)*adj_p;
+  float trig_temp = TRIG_HUMID - FAN_LOWER_HUMID_OFFSET + (FAN_LOWER_HUMID_OFFSET + FAN_UPPER_HUMID_OFFSET)*adj_p;
+  if (temp >= trig_temp || humid >= trig_humid)
     return TRIG_POWER;
   else
     return 0;
@@ -19,8 +35,22 @@ short int fanout(float temp, float humid)
 #endif
 
 const float fan_power_range = END_POWER-INIT_POWER // power range for the fan to operate
-short int fanout(float temp, float humid)
+short int fanout(float temp, float humid, short int adj)
 {
+  if (adj == -1) //Adjustor disabled use default value
+    adj = FAN_DEFAULT_V;
+  #ifdef FAN_EXTREME
+    if (adj <= ADJUSTOR_MIN)
+      return 0;
+    else if (adj >= ADJUSTOR_MAX)
+      return FAN_MAX;
+  #else
+    if (adj < ADJUSTOR_MIN)
+      adj = ADJUSTOR_MIN;
+    else if (adj > ADJUSTOR_MAX)
+      adj = ADJUSTOR_MAX;
+  #endif
+
   float output;
   #ifdef HEAT_INDEX_FOR_PROPORTIONAL_CONTROL
   float heat_index = dht.computeHeatIndex(temp, humid, false);
@@ -54,8 +84,22 @@ short int fanout(float temp, float humid)
 
 #elif FANMODE == APPARENT_TEMPERATURE // APPARENT TEMPERATURE WINDSPEED FORMULA
 #include <math.h>
-short int fanout(float temp, float humid)
+short int fanout(float temp, float humid, short int adj)
 {
+  if (adj == -1) //Adjustor disabled use default value
+    adj = FAN_DEFAULT_V;
+  #ifdef FAN_EXTREME
+    if (adj <= ADJUSTOR_MIN)
+      return 0;
+    else if (adj >= ADJUSTOR_MAX)
+      return FAN_MAX;
+  #else
+    if (adj < ADJUSTOR_MIN)
+      adj = ADJUSTOR_MIN;
+    else if (adj > ADJUSTOR_MAX)
+      adj = ADJUSTOR_MAX;
+  #endif
+
   float output = 0; // initiate as 0
   unsigned float vapor_pressure;
   float windspeed;
@@ -73,7 +117,7 @@ short int fanout(float temp, float humid)
 #elif FANMODE == HEAT_INDEX // HEAT INDEX AUTOADJUSTMENT
 #include "DHT.h"
 
-short int fanout(float temp, float humid)
+short int fanout(float temp, float humid, short int adj)
 {
   static float output = 0;
   static unsigned long int last_check = 0;

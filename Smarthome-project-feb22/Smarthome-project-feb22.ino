@@ -49,8 +49,8 @@ void loop()
   #endif
   
   // Recording and loggin of sensor values
-  short int adjustor_fan_v = analogRead(ADJUStOR_FAN_PIN); // should output NaN if not connected to anything
-  short int adjustor_led_v = analogRead(ADJUStOR_LED_PIN); // ditto
+  short int adjustor_fan_v = analogRead(ADJUSTOR_FAN_PIN); // should output 0 if not connected to anything
+  short int adjustor_led_v = analogRead(ADJUSTOR_LED_PIN); // ditto
   short int photo_v = analogRead(PHOTOSENSOR_PIN); // luminance check, photosensor
   float temp = dht.readTemperature(); // dht check, temp & humidity
   float humid = dht.readHumidity();

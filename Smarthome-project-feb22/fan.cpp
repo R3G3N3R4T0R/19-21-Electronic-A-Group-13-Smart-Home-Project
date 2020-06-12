@@ -19,9 +19,9 @@ short int fanout(float temp, float humid, short int adj)
     else if (adj > ADJUSTOR_MAX)
       adj = ADJUSTOR_MAX;
   #endif
-  short int adj_p = (adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN);
+  float adj_p = (adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN);
   float trig_temp = TRIG_TEMP - FAN_LOWER_TEMP_OFFSET + (FAN_LOWER_TEMP_OFFSET + FAN_UPPER_TEMP_OFFSET)*adj_p;
-  float trig_temp = TRIG_HUMID - FAN_LOWER_HUMID_OFFSET + (FAN_LOWER_HUMID_OFFSET + FAN_UPPER_HUMID_OFFSET)*adj_p;
+  float trig_humid = TRIG_HUMID - FAN_LOWER_HUMID_OFFSET + (FAN_LOWER_HUMID_OFFSET + FAN_UPPER_HUMID_OFFSET)*adj_p;
   if (temp >= trig_temp || humid >= trig_humid)
     return TRIG_POWER;
   else
@@ -50,20 +50,34 @@ short int fanout(float temp, float humid, short int adj)
     else if (adj > ADJUSTOR_MAX)
       adj = ADJUSTOR_MAX;
   #endif
+  float adj_p = (adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN); 
 
   float output;
   #ifdef HEAT_INDEX_FOR_PROPORTIONAL_CONTROL
+  float temp_offset = (FAN_LOWER_TEMP_OFFSET + FAN_UPPER_TEMP_OFFSET)*adj_p - FAN_LOWER_TEMP_OFFSET;
+
+  float init_temp = INIT_TEMP + temp_offset;
+  float end_temp = END_TEMP + temp_offset;
+
   float heat_index = dht.computeHeatIndex(temp, humid, false);
-  if (heat_index >= INIT_TEMP)
+  if (heat_index >= init_temp)
   {
-    if (heat_index >= END_TEMP)
+    if (heat_index >= end_temp)
       output = END_POWER;
     else
     {
-      output = ((temp - INIT_TEMP)/(END_TEMP - INIT_TEMP))*fan_power_range + INIT_POWER;
+      output = ((temp - init_temp)/(end_temp - init_temp))*fan_power_range + INIT_POWER;
     }
   }
   #else
+  float temp_offset = (FAN_LOWER_TEMP_OFFSET + FAN_UPPER_TEMP_OFFSET)*adj_p - FAN_LOWER_TEMP_OFFSET;
+  float humid_offset = (FAN_LOWER_HUMID_OFFSET + FAN_UPPER_HUMID_OFFSET)*adj_p - FAN_LOWER_HUMID_OFFSET;
+
+  float init_temp  = INIT_TEMP  + temp_offset;
+  float end_temp   = END_TEMP   + temp_offset;
+  float init_humid = INIT_HUMID + humid_offset;
+  float end_temp   = END_HUMID  + humid_offset;
+
   float tempout, humidout;
   if (temp >= INIT_TEMP || humid >= INIT_HUMID)
   {
@@ -99,13 +113,15 @@ short int fanout(float temp, float humid, short int adj)
     else if (adj > ADJUSTOR_MAX)
       adj = ADJUSTOR_MAX;
   #endif
+  float adj_p = (adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN);
+  float apparent_temp = AT - FAN_LOWER_TEMP_OFFSET + (FAN_LOWER_TEMP_OFFSET + FAN_UPPER_TEMP_OFFSET)*adj_p;
 
   float output = 0; // initiate as 0
   unsigned float vapor_pressure;
   float windspeed;
   
   vapor_pressure = (humid/100)*6.105*exp((17.27*temp)/(237.7+temp));
-  windspeed      = (temp+0.33*vapor_pressure-4-AT)/0.7;
+  windspeed      = (temp+0.33*vapor_pressure-4-apparent_temp)/0.7;
   if (windspeed <= V_COE*5) // 
     output = (windspeed/V_COE)*FAN_MAX/5 + 0.5; // +0.5 to round off typecast
   else if (windspeed > 0) // output is initiated as 0 so if all conditions are not met it will return as 0

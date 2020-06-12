@@ -10,7 +10,7 @@
     if (adj == -1)
     adj = LED_DEFAULT_V; // set the adjustor value to LED system default if it is not enabled
 
-    if ((photo >= TRIG_BRIGHTNESS && adj >= ADJUSTOR_MIN) || adj >= ADJUSTOR_MAX)
+    if (((photo >= TRIG_BRIGHTNESS && adj >= ADJUSTOR_MIN)) || adj >= ADJUSTOR_MAX)
       return LED_LUMINANCE;
     else
       return 0;

@@ -115,18 +115,13 @@ short int fanout(float temp, float humid, short int adj)
   #endif
   float adj_p = (adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN);
   float apparent_temp = AT - FAN_LOWER_TEMP_OFFSET + (FAN_LOWER_TEMP_OFFSET + FAN_UPPER_TEMP_OFFSET)*adj_p;
-  #ifdef REPORT_TARGET_PARAMETERS
-  Serial.print("TARGET TEMP");
-  Serial.print(apparent_temp);
-  #endif
 
   float output = 0; // initiate as 0
-  unsigned float vapor_pressure;
-  float windspeed;
   
-  vapor_pressure = (humid/100)*6.105*exp((17.27*temp)/(237.7+temp));
-  windspeed      = (temp+0.33*vapor_pressure-4-apparent_temp)/0.7;
-  if (windspeed <= V_COE*5) // 
+  double vapor_pressure = (humid/100)*6.1078*exp((17.27*temp)/(237.7 + temp)); // water vapor pressure in hPa
+  float  windspeed      = (temp + 0.33*vapor_pressure - 4 - apparent_temp)/0.7; // windspeed in m/s
+
+  if (windspeed < V_COE*5) // 
     output = (windspeed/V_COE)*FAN_MAX/5 + 0.5; // +0.5 to round off typecast
   else if (windspeed > 0) // output is initiated as 0 so if all conditions are not met it will return as 0
     output = FAN_MAX;

@@ -17,14 +17,22 @@ void setup()
   //INPUT SETUP
   pinMode(ADJUSTOR_FAN_PIN, INPUT);
   pinMode(ADJUSTOR_LED_PIN, INPUT);
-  pinMode(PHOTOSENSOR_PIN, INPUT);
-  pinMode(ADJSUTOR_FAN_JUMPER, INPUT);
-  pinMode(ADJSUTOR_LED_JUMPER, INPUT);
+  pinMode(PHOTORESIST_PIN, INPUT);
+  pinMode(ADJUSTOR_FAN_JUMPER, INPUT);
+  pinMode(ADJUSTOR_LED_JUMPER, INPUT);
   //OUTPUT SETUP
   pinMode(LED_PIN, OUTPUT);
   pinMode(FAN_P_PIN, OUTPUT);
   pinMode(FAN_C_PIN, OUTPUT);
   pinMode(LED_BUILTIN, OUTPUT);
+  //EXTRA POWER PINS SETUP
+  #ifdef EXTRA_VOLTAGE_PINS
+  int powerpins[EXTRA_PIN_COUNT] = {EXTRA_PINS};
+  for (int pin = EXTRA_PIN_COUNT; pin > 0; pin--)
+  {
+    pinMode(powerpins[pin-1], OUTPUT);
+  }
+  #endif
   //INITIALIZING THE BOARD
   Serial.begin(DATARATE);
   dht.begin();
@@ -36,22 +44,29 @@ void loop()
   delay(BREAKTIME); //Loop delay
   current_time = millis(); // Marking down current system time
   digitalWrite(LED_BUILTIN, HIGH); // The ON light
+  static unsigned long int lastcheck = 0; // for time checking output terminal
   #ifdef EXTRA_VOLTAGE_PINS
-  int powerpins = (EXTRA_PINS);
-  Serial.print("Extra Power Pins : ")
-  for (int pin = EXTRA_PIN_COUNT, pin > 0, pin--)
+  int powerpins[EXTRA_PIN_COUNT] = {EXTRA_PINS};
+  for (int pin = EXTRA_PIN_COUNT; pin > 0; pin--)
   {
-    digitalWrite(pin, HIGH);
-    Serial.print(pin);
-    Serial.print(",");
+    digitalWrite(powerpins[pin-1], HIGH);
   }
-  Serial.print("\n\r");
+  if (current_time - lastcheck >= INFO_BREAKTIME)
+  {
+    Serial.print("Extra Power Pins : ");
+    for (int pin = EXTRA_PIN_COUNT; pin > 0; pin--)
+    {
+      Serial.print(powerpins[pin-1]);
+      Serial.print(",");
+    }
+    Serial.print("\n\r");
+  }
   #endif
   
   // Recording and loggin of sensor values
   short int adjustor_fan_v = analogRead(ADJUSTOR_FAN_PIN); // should output 0 if not connected to anything
   short int adjustor_led_v = analogRead(ADJUSTOR_LED_PIN); // ditto
-  short int photo_v = analogRead(PHOTOSENSOR_PIN); // luminance check, photosensor
+  short int photo_v = analogRead(PHOTORESIST_PIN); // luminance check, photosensor
   float temp = dht.readTemperature(); // dht check, temp & humidity
   float humid = dht.readHumidity();
   
@@ -60,14 +75,16 @@ void loop()
   static short int legacy_adjustor_led_v = -1; // reference value for led adjustor
   if (digitalRead(ADJUSTOR_FAN_JUMPER) == HIGH) // disable adjustor features if jumped
   {
-    Serial.println("MANUAL FAN ADJUSTMENT DISABLED");
+    if (current_time - lastcheck >= INFO_BREAKTIME)
+      Serial.println("MANUAL FAN ADJUSTMENT DISABLED");
     adjustor_fan_v = legacy_adjustor_fan_v; // keep the adjustor value if the fan adjustor is disconnected
   } else {
     legacy_adjustor_fan_v = adjustor_fan_v; // save the input of the fan adjustor value for when the adjustor is disconnected afterwards
   }
   if (digitalRead(ADJUSTOR_LED_JUMPER) == HIGH) // disable adjustor features if jumped
   {
-    Serial.println("MANUAL LED ADJUSTMENT DISABLED");
+    if (current_time - lastcheck >= INFO_BREAKTIME)
+      Serial.println("MANUAL LED ADJUSTMENT DISABLED");
     adjustor_led_v = legacy_adjustor_led_v; // keep the adjustor value if the led adjustor is disconnected
   } else {
     legacy_adjustor_led_v = adjustor_led_v; // save the input of the led adjustor value for when the adjustor is disconnected afterwards
@@ -82,18 +99,17 @@ void loop()
   //Sensor Output
   float heat_index = dht.computeHeatIndex(temp, humid, false); // Heat Index for future reference
 
-  static unsigned long int lastcheck = 0;
   if (current_time - lastcheck >= INFO_BREAKTIME)
   {
-    char tempout[32], heat_index_out[32]; //Temperature output placeholder for when fahrenheit reading is enabled
+    //Temperature output placeholder for when fahrenheit reading is enabled
     #ifdef FAHRENHEIT
     float tempout = temp*(9/5)+32;
     float heat_index = heat_index*(9/5)+32;
-    #define T_UNIT *F
+    #define T_UNIT "*F"
     #else
     float tempout = temp;
     float heat_index_out = heat_index;
-    #define T_UNIT *C
+    #define T_UNIT "*C"
     #endif
     
     // The following output did not execute properly as a whole so it is splitted up
@@ -102,7 +118,7 @@ void loop()
     Serial.print(stream);
     sprintf(stream, "LED Adjustor Value: %d\n\r", adjustor_led_v);
     Serial.print(stream);
-    sprintf(stream, "Photosensor Value : %d\n\r", photo_v);
+    sprintf(stream, "Photoresist Value : %d\n\r", photo_v);
     Serial.print(stream);
     Serial.print(   "Temperature       : ");
     Serial.print(tempout);

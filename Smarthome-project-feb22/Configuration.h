@@ -3,9 +3,9 @@
  * INPUT and OUTPUT PINS
  **********/
 //INPUT
-#define ADJUStOR_FAN_PIN A0// must be set but not connected to any device
+#define ADJUSTOR_FAN_PIN A0// must be set but not connected to any device
 #define ADJUSTOR_LED_PIN A1// also must be set
-#define PHOTOSENSOR_PIN A2
+#define PHOTORESIST_PIN A2
 #define DHT_PIN A3
 
 //JUMPERS jump the pins to disable correseponding adjustors
@@ -20,7 +20,7 @@
 //Extra Voltage pins uncomment to enable
 #define EXTRA_VOLTAGE_PINS
 #define EXTRA_PIN_COUNT 4 // amount of extra power pins
-#define EXTRA_PINS 8,9,10,11// pins that are selected as power pins
+#define EXTRA_PINS 8,9,10,11 // pins that are selected as power pins
 
 /**********
  * BOARD SETTINGs AND CONSTANTS 
@@ -32,8 +32,8 @@
 //Use fahrenheit for output log (this file still use Celsius as parameters), uncomment to enable
 //#define FAHRENHEIT
 
-//Report targets for parameters, uncomment to enable
-#define REPORT_TARGET_PARAMETERS
+//Report targets for parameters, uncomment to enable (not implemented)
+//#define REPORT_TARGET_PARAMETERS
 
 /**********
  * SPECIAL MODULES AND HARDWARE SETTINGS
@@ -46,7 +46,7 @@
 /*****
  * Adjustor Settings
  */
-#define ADJUSTOR_MAX 1023 // integer of the max adjustor input excess will only be treated as this value, defaulted to 1023
+#define ADJUSTOR_MAX 969 // integer of the max adjustor input excess will only be treated as this value, defaulted to 1023
 #define ADJUSTOR_MIN 0 // integer of the min adjustor input, upon reaching any lower number will treat it as 0 , defaulted to 0
 
 /*****
@@ -127,8 +127,8 @@
 //MANUAL CONTROLS
 // Temperature offsets for anjustor to change, the upper cap is the max value added to the target and the lower
 // offset is the max value subtracted, the rate of change is always linear
-#define FAN_UPPER_TEMP_OFFSET 4
-#define FAN_LOWER_TEMP_OFFSET 4
+#define FAN_UPPER_TEMP_OFFSET 5
+#define FAN_LOWER_TEMP_OFFSET 5
 #define FAN_UPPER_HUMID_OFFSET 20
 #define FAN_LOWER_HUMID_OFFSET 20
 #define FAN_DEFAULT_V 512 //Default value when adjustor is detached
@@ -163,8 +163,8 @@
 // APPARENT TEMPERATURE FUNCTION
 //  If Apparent temperature control is selected input the coefficiect of fan speed to voltage (V_COE) to be multiplied with the output voltage
 //  AT is the apparent temperature you wan to attain in Celsius
-#define V_COE 1.0
-#define AT 25.0
+#define V_COE 4.75
+#define AT 35.0
 
 /*
 // Heat Index Autoadjustment (DOES NOT WORK CURRENTLY)

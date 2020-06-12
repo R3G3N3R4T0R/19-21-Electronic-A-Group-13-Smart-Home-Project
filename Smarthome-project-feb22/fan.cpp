@@ -115,6 +115,10 @@ short int fanout(float temp, float humid, short int adj)
   #endif
   float adj_p = (adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN);
   float apparent_temp = AT - FAN_LOWER_TEMP_OFFSET + (FAN_LOWER_TEMP_OFFSET + FAN_UPPER_TEMP_OFFSET)*adj_p;
+  #ifdef REPORT_TARGET_PARAMETERS
+  Serial.print("TARGET TEMP");
+  Serial.print(apparent_temp);
+  #endif
 
   float output = 0; // initiate as 0
   unsigned float vapor_pressure;

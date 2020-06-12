@@ -29,8 +29,11 @@
 #define INFO_BREAKTIME 1500 // delay before another piece of information is sent
 #define BREAKTIME 0 // delay between cycles, forcibly decrease reactiveness
 
-//uncomment the following line to use fahrenheit for output log (this file still use Celsius as parameters)
+//Use fahrenheit for output log (this file still use Celsius as parameters), uncomment to enable
 //#define FAHRENHEIT
+
+//Report targets for parameters, uncomment to enable
+#define REPORT_TARGET_PARAMETERS
 
 /**********
  * SPECIAL MODULES AND HARDWARE SETTINGS

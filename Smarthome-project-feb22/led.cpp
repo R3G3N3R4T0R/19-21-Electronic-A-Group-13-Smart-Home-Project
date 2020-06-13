@@ -34,7 +34,7 @@
     #endif
 
     float output = 0;
-    double adj_v = (adj_v - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN)
+    double adj_v = ((float)adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN)
     if (photo == -1 && adj != -1) //Photosensor disabled, use only manual control in the following code
       output = (float)adj_v*TRIG_LUMINANCE;
     
@@ -61,7 +61,7 @@
         output = END_LUMINATION;
       else
       {
-        double control_v = (final_lower_cap - photo)/(final_lower_cap - final_upper_cap);
+        double control_v = (double)(final_lower_cap - photo)/(final_lower_cap - final_upper_cap);
         control_v = pow(control_v, LUMINANCE_EXPONENT);
         output = control_v*(END_LUMINANCE - INIT_LUMINANCE) + INIT_LUMINANCE;
       }
@@ -86,11 +86,11 @@
     if (adj == -1)
       adj = DEFAULT_LUMINATION; // set the adjustor to default luumination value if not enabled
     
-    float diff = adj - photo;
+    short int diff = adj - photo;
     if (diff == 0 || (diff < 0 && output == 0)); // directly returns output when no change is needed
     else
     {
-      output += diff*LED_INC;
+      output += (float)diff*LED_INC;
       if (LED_THOLD <= output && output<= LED_MAX); //check if output is in range
       else if (output <= LED_THOLD)
         output = 0;

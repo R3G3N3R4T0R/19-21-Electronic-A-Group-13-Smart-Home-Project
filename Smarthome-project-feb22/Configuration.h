@@ -110,7 +110,7 @@
  *Fan Settings
  */
 #define FAN_MAX 255 // integer for the max power output, defaulted to 255
-#define FAN_THOLD 25 //set the low fan threshold if output is lower than FAN_THOLD it will output 0 instead, default 25
+#define FAN_THOLD 50 //set the low fan threshold if output is lower than FAN_THOLD it will output 0 instead, default 25
 
 //Select Fan operation mode
 // Bang Bang control(on-off): BANG_BANG

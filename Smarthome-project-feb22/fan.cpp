@@ -19,7 +19,7 @@ short int fanout(float temp, float humid, short int adj)
     else if (adj > ADJUSTOR_MAX)
       adj = ADJUSTOR_MAX;
   #endif
-  float adj_p = (adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN);
+  float adj_p = ((float)adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN);
   float trig_temp = TRIG_TEMP - FAN_LOWER_TEMP_OFFSET + (FAN_LOWER_TEMP_OFFSET + FAN_UPPER_TEMP_OFFSET)*adj_p;
   float trig_humid = TRIG_HUMID - FAN_LOWER_HUMID_OFFSET + (FAN_LOWER_HUMID_OFFSET + FAN_UPPER_HUMID_OFFSET)*adj_p;
   if (temp >= trig_temp || humid >= trig_humid)
@@ -50,7 +50,7 @@ short int fanout(float temp, float humid, short int adj)
     else if (adj > ADJUSTOR_MAX)
       adj = ADJUSTOR_MAX;
   #endif
-  float adj_p = (adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN); 
+  float adj_p = ((float)adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN); 
 
   float output;
   #ifdef HEAT_INDEX_FOR_PROPORTIONAL_CONTROL
@@ -113,7 +113,7 @@ short int fanout(float temp, float humid, short int adj)
     else if (adj > ADJUSTOR_MAX)
       adj = ADJUSTOR_MAX;
   #endif
-  float adj_p = (adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN);
+  float adj_p = ((float)adj - ADJUSTOR_MIN)/(ADJUSTOR_MAX - ADJUSTOR_MIN);
   float apparent_temp = AT - FAN_LOWER_TEMP_OFFSET + (FAN_LOWER_TEMP_OFFSET + FAN_UPPER_TEMP_OFFSET)*adj_p;
 
   float output = 0; // initiate as 0

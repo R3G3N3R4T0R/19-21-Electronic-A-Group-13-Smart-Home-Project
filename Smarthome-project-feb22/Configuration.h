@@ -46,7 +46,7 @@
 /*****
  * Adjustor Settings
  */
-#define ADJUSTOR_MAX 969 // integer of the max adjustor input excess will only be treated as this value, defaulted to 1023
+#define ADJUSTOR_MAX 975 // integer of the max adjustor input excess will only be treated as this value, defaulted to 1023
 #define ADJUSTOR_MIN 0 // integer of the min adjustor input, upon reaching any lower number will treat it as 0 , defaulted to 0
 
 /*****
@@ -154,8 +154,8 @@
 #define END_TEMP 33.0
 #define END_HUMID 100.0
 #define END_POWER 255 // the highest power the fan should be running at
-#define FAN_POWER_CONTROL_UPPER 1.5 //Upper multiplier range for the fan power, default 1.5
-#define FAN_POWER_CONTROL_LOWER 0 //Lower multiplier range for the fan power, default 0
+//#define FAN_POWER_CONTROL_UPPER 1.5 //Upper multiplier range for the fan power, default 1.5 (scrapped)
+//#define FAN_POWER_CONTROL_LOWER 0 //Lower multiplier range for the fan power, default 0
 
 //  Uncomment the following line if you want to use heat index for power scale in proportional control (only use temperature parameters)
 //#define HEAT_INDEX_FOR_PROPORIONAL_CONTROL
@@ -163,7 +163,7 @@
 // APPARENT TEMPERATURE FUNCTION
 //  If Apparent temperature control is selected input the coefficiect of fan speed to voltage (V_COE) to be multiplied with the output voltage
 //  AT is the apparent temperature you wan to attain in Celsius
-#define V_COE 4.75
+#define V_COE 2.75
 #define AT 35.0
 
 /*

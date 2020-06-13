@@ -34,7 +34,7 @@ short int fanout(float temp, float humid, short int adj)
   #include "DHT.h"
 #endif
 
-const float fan_power_range = END_POWER-INIT_POWER // power range for the fan to operate
+const float fan_power_range = END_POWER - INIT_POWER; // power range for the fan to operate
 short int fanout(float temp, float humid, short int adj)
 {
   if (adj == -1) //Adjustor disabled use default value
@@ -76,17 +76,17 @@ short int fanout(float temp, float humid, short int adj)
   float init_temp  = INIT_TEMP  + temp_offset;
   float end_temp   = END_TEMP   + temp_offset;
   float init_humid = INIT_HUMID + humid_offset;
-  float end_temp   = END_HUMID  + humid_offset;
+  float end_humid   = END_HUMID  + humid_offset;
 
   float tempout, humidout;
-  if (temp >= INIT_TEMP || humid >= INIT_HUMID)
+  if (temp >= init_temp || humid >= init_humid)
   {
-    if (temp >= END_TEMP || humid >= END_HUMID)
+    if (temp >= end_temp || humid >= end_humid)
       output = END_POWER;
     else
     {
-      tempout  = ((temp - INIT_TEMP)/(END_TEMP - INIT_TEMP))*fan_power_range + INIT_POWER;
-      humidout = ((humid - INIT_HUMID)/(END_HUMID - INIT_HUMID))*fan_power_range + INIT_POWER;
+      tempout  = ((temp - init_temp)/(end_temp - init_temp))*fan_power_range + INIT_POWER;
+      humidout = ((humid - init_humid)/(end_humid - init_humid))*fan_power_range + INIT_POWER;
       output = tempout > humidout ? tempout : humidout;
     }
   }
